@@ -319,29 +319,76 @@ elif menu == "Profil Saya":
             conn.commit()
             st.success("Profil diperbarui!")
 
-# --- CHAT & BANTUAN ---
+# --- CHAT & BANTUAN (PERBAIKAN ERROR INDEX) ---
 elif menu in ["Bantuan/Chat", "Chat Center"]:
     st.header("💬 Pusat Bantuan")
-    if st.session_state.role == 'admin':
-        u_list = pd.read_sql_query("SELECT id, username FROM users WHERE role='user'", conn)
-        sel_u = st.selectbox("Pilih User", u_list['username'])
-        target_id = u_list[u_list['username'] == sel_u]['id'].values[0]
-    else:
-        target_id = conn.execute("SELECT id FROM users WHERE username='ADMIN'").fetchone()[0]
-
-    # Load Chat
-    chat_df = pd.read_sql_query(f"SELECT * FROM messages WHERE (sender_id={st.session_state.user_id} AND receiver_id={target_id}) OR (sender_id={target_id} AND receiver_id={st.session_state.user_id})", conn)
-    for _, m in chat_df.iterrows():
-        align = "right" if m['sender_id'] == st.session_state.user_id else "left"
-        st.markdown(f"<div style='text-align: {align}; color: black;'><b>{m['time']}</b>: {m['msg']}</div>", unsafe_allow_html=True)
     
-    with st.form("chat_f"):
-        msg_in = st.text_input("Ketik pesan...")
-        if st.form_submit_button("KIRIM"):
-            conn.execute("INSERT INTO messages (sender_id, receiver_id, msg, time) VALUES (?,?,?,?)", 
-                         (st.session_state.user_id, target_id, msg_in, datetime.now().strftime("%H:%M")))
-            conn.commit()
-            st.rerun()
+    # Inisialisasi target_id
+    target_id = None
+    
+    if st.session_state.role == 'admin':
+        # Ambil daftar user yang BUKAN admin
+        u_list = pd.read_sql_query("SELECT id, username FROM users WHERE role='user'", conn)
+        
+        if u_list.empty:
+            st.info("ℹ️ Belum ada user (karyawan) yang terdaftar di sistem.")
+        else:
+            sel_u = st.selectbox("Pilih User untuk diajak Chat", u_list['username'])
+            # Cari ID user berdasarkan username yang dipilih
+            match = u_list[u_list['username'] == sel_u]
+            if not match.empty:
+                target_id = int(match['id'].values[0])
+    else:
+        # Jika login sebagai User, otomatis targetnya adalah ADMIN
+        admin_data = conn.execute("SELECT id FROM users WHERE username='ADMIN'").fetchone()
+        if admin_data:
+            target_id = admin_id = admin_data[0]
+        else:
+            st.error("Sistem Error: Akun ADMIN tidak ditemukan.")
+
+    # Jika target_id ditemukan, tampilkan Chat
+    if target_id is not None:
+        st.divider()
+        
+        # Load riwayat pesan
+        chat_df = pd.read_sql_query(f"""
+            SELECT * FROM messages 
+            WHERE (sender_id={st.session_state.user_id} AND receiver_id={target_id}) 
+            OR (sender_id={target_id} AND receiver_id={st.session_state.user_id})
+            ORDER BY id ASC
+        """, conn)
+
+        # Container untuk Chat agar bisa scroll
+        chat_container = st.container()
+        with chat_container:
+            for _, m in chat_df.iterrows():
+                is_me = m['sender_id'] == st.session_state.user_id
+                align = "right" if is_me else "left"
+                bg_color = "#dcf8c6" if is_me else "#ffffff" # Warna Hijau WhatsApp vs Putih
+                
+                st.markdown(f"""
+                    <div style="display: flex; justify-content: {align}; margin-bottom: 10px;">
+                        <div style="background-color: {bg_color}; padding: 10px 15px; border-radius: 15px; 
+                                    max-width: 70%; box-shadow: 0 1px 2px rgba(0,0,0,0.1); color: black;">
+                            <div style="font-size: 0.8em; color: gray;">{m['time']}</div>
+                            <div style="font-size: 1em;">{m['msg']}</div>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+
+        # Form input pesan (selalu di bawah)
+        with st.form("chat_form", clear_on_submit=True):
+            col_t, col_b = st.columns([4, 1])
+            msg_in = col_t.text_input("Ketik pesan...", placeholder="Tulis sesuatu di sini...")
+            if col_b.form_submit_button("KIRIM 🚀"):
+                if msg_in:
+                    now = datetime.now().strftime("%H:%M")
+                    conn.execute("INSERT INTO messages (sender_id, receiver_id, msg, time) VALUES (?,?,?,?)", 
+                                 (st.session_state.user_id, target_id, msg_in, now))
+                    conn.commit()
+                    st.rerun()
+    else:
+        st.warning("⚠️ Chat belum dapat dimulai.")
 
 # --- ADMIN: GANTI BACKGROUND ---
 elif menu == "Ganti Background":
@@ -360,3 +407,4 @@ elif menu == "History Dokumen":
     st.header("📂 Riwayat Penandatanganan")
     df_h = pd.read_sql_query(f"SELECT date as Tanggal, doc_name as Nama_Dokumen, doc_no as No_Dokumen, remarks as Keterangan FROM docs WHERE user_id={st.session_state.user_id}", conn)
     st.dataframe(df_h, use_container_width=True)
+
