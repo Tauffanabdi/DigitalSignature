@@ -12,7 +12,7 @@ import numpy as np
 import cv2
 
 # --- 1. CONFIG ---
-st.set_page_config(page_title="e-Signature Pro | Corporate Edition", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="e-Signature | Corporate Edition", page_icon="🛡️", layout="wide")
 
 # --- 2. DATABASE ENGINE ---
 def init_db():
@@ -148,7 +148,7 @@ if menu == "Login":
     c1, c2, c3 = st.columns([1, 1.5, 1])
     with c2:
         st.markdown('<div class="main-card">', unsafe_allow_html=True)
-        st.markdown("<h2 style='text-align:center; border:none; margin-top:0;'>Portal Keamanan</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align:center; border:none; margin-top:0;'>Wecome to Digital Signature</h2>", unsafe_allow_html=True)
         t1, t2, t3 = st.tabs(["🔐 Masuk", "📝 Registrasi", "🛠️ Lupa Sandi"])
         with t1:
             u = st.text_input("Username / ID", key="l_u")
@@ -337,3 +337,4 @@ elif menu == "🏠 Beranda":
             <p>Gunakan menu navigasi di sebelah kiri untuk mengelola dokumen Anda.</p>
             <p style='font-size:12px; color:gray;'>Versi Corporate 1.0.4 - Koneksi Aman Terenkripsi</p>
         </div>""", unsafe_allow_html=True)
+
