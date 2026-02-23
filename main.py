@@ -128,7 +128,7 @@ def check_pw(pwd, hashed):
 if st.session_state.logged_in:
     with st.sidebar:
         st.markdown(f"## 🛡️ e-Signature <span style='color:#004AAD;font-size:12px;'>PRO</span>", unsafe_allow_html=True)
-        st.info(f"**Identitas Aktif:**\n\n🆔 {st.session_state.username}\n👤 {st.session_state.full_name}")
+        st.info(f"**Account:**\n\n🆔 {st.session_state.username}\n👤 {st.session_state.full_name}")
         st.divider()
         if st.session_state.role == 'admin':
             menu = st.radio("PANEL KONTROL", ["📊 Dasbor Statistik", "👥 Persetujuan Akun", "🔑 Reset Kredensial", "💬 Pusat Pesan", "⚙️ Pengaturan Sistem"])
@@ -148,7 +148,7 @@ if menu == "Login":
     c1, c2, c3 = st.columns([1, 1.5, 1])
     with c2:
         st.markdown('<div class="main-card">', unsafe_allow_html=True)
-        st.markdown("<h2 style='text-align:center; border:none; margin-top:0;'>Wecome to Digital Signature</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align:center; border:none; margin-top:0;'>Digital Signature</h2>", unsafe_allow_html=True)
         t1, t2, t3 = st.tabs(["🔐 Masuk", "📝 Registrasi", "🛠️ Lupa Sandi"])
         with t1:
             u = st.text_input("Username / ID", key="l_u")
@@ -180,9 +180,9 @@ if menu == "Login":
                     conn.commit(); st.info("📩 Permintaan reset telah diteruskan ke Admin.")
         st.markdown('</div>', unsafe_allow_html=True)
 
-elif menu == "✍️ Sahkan Dokumen":
+elif menu == "✍️ Validasi Dokumen":
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
-    st.header("Sahkan Dokumen Digital")
+    st.header("Validasi Dokumen Digital")
     u = conn.execute("SELECT full_name, emp_id, position, logo FROM users WHERE id=?", (st.session_state.user_id,)).fetchone()
     if not u[0]: st.warning("⚠️ Mohon lengkapi profil Anda sebelum melakukan tanda tangan.")
     else:
@@ -192,7 +192,7 @@ elif menu == "✍️ Sahkan Dokumen":
             nm = c1.text_input("Nama/Judul Dokumen", placeholder="Contoh: Izin Kerja Ruang Terbatas")
             rem = c2.selectbox("Status Dokumen", ["Original / Asli", "Revisi / Pembaruan"])
             conf = c2.text_input("Konfirmasi Kata Sandi", type="password")
-            if st.form_submit_button("SAHKAN DAN GENERATE QR"):
+            if st.form_submit_button("GENERATE QR"):
                 auth = conn.execute("SELECT password FROM users WHERE id=?", (st.session_state.user_id,)).fetchone()
                 if check_pw(conf, auth[0]):
                     ts = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
@@ -337,5 +337,6 @@ elif menu == "🏠 Beranda":
             <p>Gunakan menu navigasi di sebelah kiri untuk mengelola dokumen Anda.</p>
             <p style='font-size:12px; color:gray;'>Versi Corporate 1.0.4 - Koneksi Aman Terenkripsi</p>
         </div>""", unsafe_allow_html=True)
+
 
 
