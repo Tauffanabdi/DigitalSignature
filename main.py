@@ -153,7 +153,7 @@ if menu == "Login":
         with t1:
             u = st.text_input("Username / ID", key="l_u")
             p = st.text_input("Kata Sandi", type="password", key="l_p")
-            if st.button("OTENTIKASI SEKARANG"):
+            if st.button("LOGIN"):
                 res = conn.execute("SELECT id, password, status, role, username, full_name FROM users WHERE username=?", (u,)).fetchone()
                 if res and check_pw(p, res[1]):
                     if res[2] == 'pending': st.warning("⚠️ Akun Anda sedang dalam tahap tinjauan Admin.")
@@ -337,4 +337,5 @@ elif menu == "🏠 Beranda":
             <p>Gunakan menu navigasi di sebelah kiri untuk mengelola dokumen Anda.</p>
             <p style='font-size:12px; color:gray;'>Versi Corporate 1.0.4 - Koneksi Aman Terenkripsi</p>
         </div>""", unsafe_allow_html=True)
+
 
