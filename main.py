@@ -180,7 +180,7 @@ if menu == "Login":
                     conn.commit(); st.info("📩 Permintaan reset telah diteruskan ke Admin.")
         st.markdown('</div>', unsafe_allow_html=True)
 
-elif menu == "✍️ Validasi Dokumen":
+elif menu == "✍️ Sahkan Dokumen":
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
     st.header("Validasi Dokumen Digital")
     u = conn.execute("SELECT full_name, emp_id, position, logo FROM users WHERE id=?", (st.session_state.user_id,)).fetchone()
