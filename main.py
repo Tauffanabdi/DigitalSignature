@@ -187,12 +187,21 @@ elif menu == "✍️ Sahkan Dokumen":
     if not u[0]: st.warning("⚠️ Mohon lengkapi profil Anda sebelum melakukan tanda tangan.")
     else:
         with st.form("sign_form"):
-            c1, c2 = st.columns(2)
-            no = c1.text_input("Nomor Referensi Dokumen", placeholder="Contoh: 001/JSA/2026")
-            nm = c1.text_input("Nama/Judul Dokumen", placeholder="Contoh: Izin Kerja Ruang Terbatas")
-            rem = c2.selectbox("Status Dokumen", ["Original / Asli", "Revisi / Pembaruan"])
-            conf = c2.text_input("Konfirmasi Kata Sandi", type="password")
-            if st.form_submit_button("GENERATE QR"):
+                c1, c2 = st.columns(2)
+                no = c1.text_input("Nomor Referensi Dokumen", placeholder="Contoh: 001/JSA/2026")
+                nm = c1.text_input("Nama/Judul Dokumen", placeholder="Contoh: Izin Kerja Ruang Terbatas")
+                rem = c2.selectbox("Status Dokumen", ["Original / Asli", "Revisi / Pembaruan"])
+                conf = c2.text_input("Konfirmasi Kata Sandi", type="password")
+                st.markdown("""
+                    <style>
+                    .stButton > button[data-testid="baseButton"] {
+                        background-color: #1976d2 !important;
+                        color: #fff !important;
+                        font-weight: bold;
+                    }
+                    </style>
+                """, unsafe_allow_html=True)
+                if st.form_submit_button("GENERATE QR"):
                 auth = conn.execute("SELECT password FROM users WHERE id=?", (st.session_state.user_id,)).fetchone()
                 if check_pw(conf, auth[0]):
                     ts = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
