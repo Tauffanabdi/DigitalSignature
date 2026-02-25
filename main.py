@@ -204,10 +204,10 @@ elif menu == "✍️ Sahkan Dokumen":
                 if st.form_submit_button("GENERATE QR"):
                     auth = conn.execute("SELECT password FROM users WHERE id=?", (st.session_state.user_id,)).fetchone()
                     if check_pw(conf, auth[0]):
-                    ts = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
-                    h = hashlib.sha256(f"{u[0]}|{no}|{nm}".encode()).hexdigest()
-                    data = f"SIGNER:{u[0]}\nID:{u[1]}\nPOS:{u[2]}\nDOC:{nm}\nNO:{no}\nTIME:{ts}\nHASH:{h}"
-                    qr_img = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H)
+                        ts = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
+                        h = hashlib.sha256(f"{u[0]}|{no}|{nm}".encode()).hexdigest()
+                        data = f"SIGNER:{u[0]}\nID:{u[1]}\nPOS:{u[2]}\nDOC:{nm}\nNO:{no}\nTIME:{ts}\nHASH:{h}"
+                        qr_img = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H)
                     qr_img.add_data(data); qr_img.make(fit=True)
                     img = qr_img.make_image(fill_color="black", back_color="white").convert('RGB')
                     if u[3]:
