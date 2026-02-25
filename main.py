@@ -14,6 +14,29 @@ import cv2
 # --- 1. CONFIG ---
 st.set_page_config(page_title="e-Signature | Corporate Edition", page_icon="🛡️", layout="wide")
 
+# --- GLOBAL BUTTON STYLE ---
+st.markdown("""
+    <style>
+    .stButton > button,
+    .stFormSubmitButton > button,
+    .stDownloadButton > button {
+        background-color: #1976d2 !important;
+        color: #fff !important;
+        font-weight: bold !important;
+        border-radius: 6px !important;
+        border: none !important;
+        height: 48px !important;
+        transition: 0.3s;
+    }
+    .stButton > button:hover,
+    .stFormSubmitButton > button:hover,
+    .stDownloadButton > button:hover {
+        background-color: #003580 !important;
+        transform: translateY(-1px);
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # --- 2. DATABASE ENGINE ---
 def init_db():
     conn = sqlite3.connect("signature_pro_final.db", check_same_thread=False)
